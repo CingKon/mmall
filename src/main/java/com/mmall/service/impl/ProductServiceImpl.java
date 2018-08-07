@@ -34,9 +34,6 @@ public class ProductServiceImpl implements IProductService {
     private CategoryMapper categoryMapper;
 
     @Autowired
-    private IProductService iProductService;
-
-    @Autowired
     private ICategoryService iCategoryService;
 
     public ServerResponse saveOrUpdateProduct(Product product){
