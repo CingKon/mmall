@@ -72,17 +72,17 @@ public class UserController {
 
     @RequestMapping(value = "forget_check_answer.do",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> forgetCheckAnswer(String usernam,String question,String answer){
-        return iUserService.checkAnswer(usernam,question,answer);
+    public ServerResponse<String> forgetCheckAnswer(String username,String question,String answer){
+        return iUserService.checkAnswer(username,question,answer);
     }
 
-    @RequestMapping(value = "forget_rest_password.do",method = RequestMethod.POST)
+    @RequestMapping(value = "forget_reset_password.do",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> forgetRestPassword(String username,String passwordNew,String forgetToken){
         return iUserService.forgetRestPassword(username,passwordNew,forgetToken);
     }
 
-    @RequestMapping(value = "rest_password.do",method = RequestMethod.POST)
+    @RequestMapping(value = "reset_password.do",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> resetPassword(HttpSession session,String passwordOld,String passwordNew){
         User user =(User) session.getAttribute(Const.CURRENT_USER);

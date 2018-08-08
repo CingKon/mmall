@@ -62,7 +62,7 @@ public class CartController {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
-        return iCartService.selectOrUnselect(user.getId(),null,Const.Cart.CHECKED);
+        return iCartService.selectOrUnSelect(user.getId(),null,Const.Cart.CHECKED);
     }
 
     @RequestMapping("un_select_all.do")
@@ -71,7 +71,7 @@ public class CartController {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
-        return iCartService.selectOrUnselect(user.getId(),null,Const.Cart.UN_CHECKED);
+        return iCartService.selectOrUnSelect(user.getId(),null,Const.Cart.UN_CHECKED);
     }
 
     @RequestMapping("select.do")
@@ -80,7 +80,7 @@ public class CartController {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
-        return iCartService.selectOrUnselect(user.getId(),productId,Const.Cart.CHECKED);
+        return iCartService.selectOrUnSelect(user.getId(),productId,Const.Cart.CHECKED);
     }
 
     @RequestMapping("un_select.do")
@@ -89,7 +89,7 @@ public class CartController {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
-        return iCartService.selectOrUnselect(user.getId(),productId,Const.Cart.UN_CHECKED);
+        return iCartService.selectOrUnSelect(user.getId(),productId,Const.Cart.UN_CHECKED);
     }
 
     @RequestMapping("get_cart_product_count.do")

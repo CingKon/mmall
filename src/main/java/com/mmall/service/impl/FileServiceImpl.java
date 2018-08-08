@@ -31,18 +31,18 @@ public class FileServiceImpl implements IFileService {
             fileDir.mkdirs();
         }
 
-        File targetFIle = new File(path,uploadFileName);
+        File targetFile = new File(path,uploadFileName);
 
         try {
-            file.transferTo(targetFIle);
+            file.transferTo(targetFile);
             //将targetFile上传到我们的FTP服务器上
-            FTPUtil.uploadFile(Lists.newArrayList(targetFIle));
+            FTPUtil.uploadFile(Lists.newArrayList(targetFile));
             //上传完后，删除upload下的文件
-            targetFIle.delete();
+            targetFile.delete();
         } catch (IOException e) {
             logger.error("上传文件异常",e);
             return null;
         }
-        return targetFIle.getName();
+        return targetFile.getName();
     }
 }

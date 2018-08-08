@@ -13,7 +13,7 @@ public interface ICartService {
 
     ServerResponse<CartVO> list(Integer userId);
 
-    ServerResponse<CartVO> selectOrUnselect(Integer userId,Integer productId,Integer checked);
+    ServerResponse<CartVO> selectOrUnSelect(Integer userId,Integer productId,Integer checked);
 
     ServerResponse<Integer> getCartProductCount(Integer userId);
 }

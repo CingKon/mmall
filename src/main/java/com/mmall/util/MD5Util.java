@@ -3,7 +3,7 @@ package com.mmall.util;
 import java.security.MessageDigest;
 
 /**
- * Created by wanxing
+ * Created by geely
  */
 public class MD5Util {
 
@@ -46,9 +46,16 @@ public class MD5Util {
     }
 
     public static String MD5EncodeUtf8(String origin) {
+        origin = origin + PropertiesUtil.getProperty("password.salt", "");
         return MD5Encode(origin, "utf-8");
     }
 
+//    public static void main(String[] args){
+//        String md5Password = MD5EncodeUtf8("admin");
+//        System.out.print(md5Password);
+//    }
+    //原密码：427338237BD929443EC5D48E24FD2B1A
+    //新密码：21232F297A57A5A743894A0E4A801FC3
 
     private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};

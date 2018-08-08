@@ -133,7 +133,7 @@
   </select>
   
   <select id="selectCartProductCheckedStatusByUserId" resultType="int" parameterType="int">
-    select count (1) from mmall_cart where checked = 0 and user_id = #{userId}
+    select count(1) from mmall_cart where checked = 0 and user_id = #{userId}
   </select>
   
   <delete id="deleteByUserIdProductIds" parameterType="map">

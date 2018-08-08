@@ -21,31 +21,35 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Created by geely
+ */
 @Service("iCartService")
 public class CartServiceImpl implements ICartService {
 
     @Autowired
     private CartMapper cartMapper;
-
     @Autowired
     private ProductMapper productMapper;
 
-    public ServerResponse<CartVO> add(Integer userId,Integer productId,Integer count){
-        if (productId == null || count == null)
+    public ServerResponse<CartVO> add(Integer userId, Integer productId, Integer count){
+        if(productId == null || count == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+
         Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
-        if (cart == null){
-            //这个产品不在购物车里，需要新增一个这个产品的记录
-            Cart cartItemp = new Cart();
-            cartItemp.setQuantity(count);
-            cartItemp.setChecked(Const.Cart.CHECKED);
-            cartItemp.setProductId(productId);
-            cartItemp.setUserId(userId);
-            cartMapper.insert(cartItemp);
-        }else {
-            //这个产品已经在购物车里了
-            //如果产品已存在，数量相加
-            count = cart.getQuantity()+count;
+        if(cart == null){
+            //这个产品不在这个购物车里,需要新增一个这个产品的记录
+            Cart cartItem = new Cart();
+            cartItem.setQuantity(count);
+            cartItem.setChecked(Const.Cart.CHECKED);
+            cartItem.setProductId(productId);
+            cartItem.setUserId(userId);
+            cartMapper.insert(cartItem);
+        }else{
+            //这个产品已经在购物车里了.
+            //如果产品已存在,数量相加
+            count = cart.getQuantity() + count;
             cart.setQuantity(count);
             cartMapper.updateByPrimaryKeySelective(cart);
         }
@@ -53,55 +57,76 @@ public class CartServiceImpl implements ICartService {
     }
 
     public ServerResponse<CartVO> update(Integer userId,Integer productId,Integer count){
-        if (productId == null || count == null)
+        if(productId == null || count == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
         Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
-        if (cart != null)
+        if(cart != null){
             cart.setQuantity(count);
-        cartMapper.updateByPrimaryKeySelective(cart);
+        }
+        cartMapper.updateByPrimaryKey(cart);
         return this.list(userId);
     }
 
     public ServerResponse<CartVO> deleteProduct(Integer userId,String productIds){
         List<String> productList = Splitter.on(",").splitToList(productIds);
-        if (CollectionUtils.isEmpty(productList))
+        if(CollectionUtils.isEmpty(productList)){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
         cartMapper.deleteByUserIdProductIds(userId,productList);
         return this.list(userId);
     }
 
-    public ServerResponse<CartVO> list(Integer userId){
+
+    public ServerResponse<CartVO> list (Integer userId){
         CartVO cartVO = this.getCartVOLimit(userId);
         return ServerResponse.createBySuccess(cartVO);
     }
 
-    public ServerResponse<CartVO> selectOrUnselect(Integer userId,Integer productId,Integer checked){
+
+
+    public ServerResponse<CartVO> selectOrUnSelect (Integer userId,Integer productId,Integer checked){
         cartMapper.checkedOrUncheckedProduct(userId,productId,checked);
         return this.list(userId);
     }
 
     public ServerResponse<Integer> getCartProductCount(Integer userId){
-        if (userId == null)
+        if(userId == null){
             return ServerResponse.createBySuccess(0);
+        }
         return ServerResponse.createBySuccess(cartMapper.selectCartProductCount(userId));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private CartVO getCartVOLimit(Integer userId){
         CartVO cartVO = new CartVO();
         List<Cart> cartList = cartMapper.selectCartByUserId(userId);
-        List<CartProductVO> cartProductVOList = Lists.newArrayList();
+        List<CartProductVO> cartProductVoList = Lists.newArrayList();
 
         BigDecimal cartTotalPrice = new BigDecimal("0");
 
-        if (CollectionUtils.isNotEmpty(cartList)){
-            for(Cart cartItemp : cartList){
+        if(CollectionUtils.isNotEmpty(cartList)){
+            for(Cart cartItem : cartList){
                 CartProductVO cartProductVO = new CartProductVO();
-                cartProductVO.setId(cartItemp.getId());
+                cartProductVO.setId(cartItem.getId());
                 cartProductVO.setUserId(userId);
-                cartProductVO.setProductId(cartItemp.getProductId());
+                cartProductVO.setProductId(cartItem.getProductId());
 
-                Product product = productMapper.selectByPrimaryKey(cartItemp.getProductId());
-                if (product != null){
+                Product product = productMapper.selectByPrimaryKey(cartItem.getProductId());
+                if(product != null){
                     cartProductVO.setProductMainImage(product.getMainImage());
                     cartProductVO.setProductName(product.getName());
                     cartProductVO.setProductSubtitle(product.getSubtitle());
@@ -110,34 +135,34 @@ public class CartServiceImpl implements ICartService {
                     cartProductVO.setProductStock(product.getStock());
                     //判断库存
                     int buyLimitCount = 0;
-                    if (product.getStock() >= cartItemp.getQuantity()){
+                    if(product.getStock() >= cartItem.getQuantity()){
                         //库存充足的时候
-                        buyLimitCount = cartItemp.getQuantity();
+                        buyLimitCount = cartItem.getQuantity();
                         cartProductVO.setLimitQuantity(Const.Cart.LIMIT_NUM_SUCCESS);
-                    }
-                    else {
+                    }else{
                         buyLimitCount = product.getStock();
                         cartProductVO.setLimitQuantity(Const.Cart.LIMIT_NUM_FAIL);
                         //购物车中更新有效库存
                         Cart cartForQuantity = new Cart();
-                        cartForQuantity.setId(cartItemp.getId());
+                        cartForQuantity.setId(cartItem.getId());
                         cartForQuantity.setQuantity(buyLimitCount);
                         cartMapper.updateByPrimaryKeySelective(cartForQuantity);
                     }
                     cartProductVO.setQuantity(buyLimitCount);
                     //计算总价
                     cartProductVO.setProductTotalPrice(BigDecimalUtil.mul(product.getPrice().doubleValue(),cartProductVO.getQuantity()));
-                    cartProductVO.setProductChecked(cartItemp.getChecked());
+                    cartProductVO.setProductChecked(cartItem.getChecked());
                 }
-                if (cartItemp.getChecked() == Const.Cart.CHECKED){
-                    //如果已被勾选，增加到整个购物车总价中
+
+                if(cartItem.getChecked() == Const.Cart.CHECKED){
+                    //如果已经勾选,增加到整个的购物车总价中
                     cartTotalPrice = BigDecimalUtil.add(cartTotalPrice.doubleValue(),cartProductVO.getProductTotalPrice().doubleValue());
                 }
-                cartProductVOList.add(cartProductVO);
+                cartProductVoList.add(cartProductVO);
             }
         }
         cartVO.setCartTotalPrice(cartTotalPrice);
-        cartVO.setCartProductVOList(cartProductVOList);
+        cartVO.setCartProductVOList(cartProductVoList);
         cartVO.setAllChecked(this.getAllCheckedStatus(userId));
         cartVO.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
 
@@ -145,8 +170,36 @@ public class CartServiceImpl implements ICartService {
     }
 
     private boolean getAllCheckedStatus(Integer userId){
-        if (userId == null)
+        if(userId == null){
             return false;
+        }
         return cartMapper.selectCartProductCheckedStatusByUserId(userId) == 0;
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

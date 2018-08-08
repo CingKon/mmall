@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements ICategoryService {
     private Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     public ServerResponse addCategory(String categoryName,Integer parentId){
-        if (parentId == null || StringUtils.isNotBlank(categoryName))
+        if (parentId == null || StringUtils.isBlank(categoryName))
             return ServerResponse.createByErrorMessage("添加品类参数错误");
 
         Category category = new Category();
@@ -40,13 +40,13 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     public ServerResponse updateCategoryName(Integer categoryId,String categoryName){
-        if (categoryId == null || StringUtils.isNotBlank(categoryName))
+        if (categoryId == null || StringUtils.isBlank(categoryName))
             return ServerResponse.createByErrorMessage("更新品类参数错误");
         Category category = new Category();
         category.setId(categoryId);
         category.setName(categoryName);
 
-        int rowCount = categoryMapper.updateByPrimaryKey(category);
+        int rowCount = categoryMapper.updateByPrimaryKeySelective(category);
         if (rowCount > 0)
             return ServerResponse.createBySuccess("更新品类成功");
         return ServerResponse.createByErrorMessage("更新品类失败");

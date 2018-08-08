@@ -133,7 +133,7 @@
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null" >
-        now(),
+        update_time = now(),
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -148,7 +148,7 @@
       answer = #{answer,jdbcType=VARCHAR},
       role = #{role,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      now()
+      update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
 
@@ -180,7 +180,7 @@
 
     <select id="checkAnswer" resultType="int" parameterType="map">
         select
-        count (1)
+        count(1)
         from mmall_user
         where username = #{username}
         and question = #{question}
@@ -195,14 +195,14 @@
 
     <select id="checkPassword" resultType="int" parameterType="map">
         select
-        count (1)
+        count(1)
         from mmall_user
         where id = #{userId}
         and password = #{password}
     </select>
     
     <select id="checkEmailByUserID" resultType="int" parameterType="map">
-        select count (1) from mmall_user
+        select count(1) from mmall_user
         where email = #{email}
         and id != #{userId}
     </select>

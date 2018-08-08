@@ -118,7 +118,7 @@ public class FTPUtil {
                     ftpClient.storeFile(fileItem.getName(),fis);
                 }
             }catch (IOException e){
-                logger.error("上传文件异常",e);
+                logger.error("上传文件异常1",e);
                 uploaded = false;
                 e.printStackTrace();
             }finally {

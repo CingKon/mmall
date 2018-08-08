@@ -168,7 +168,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     public ServerResponse<PageInfo> getProductByKeywordCategory(String keyword,Integer categoryId,int pageNum,int pageSize,String orderBy){
-        if (StringUtils.isNotBlank(keyword) && categoryId == null)
+        if (StringUtils.isBlank(keyword) && categoryId == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
         List<Integer> categoryIdList = new ArrayList<Integer>();
         if (categoryId != null){
@@ -177,7 +177,7 @@ public class ProductServiceImpl implements IProductService {
                 //没有该分类，并且还没有关键字，这个时候返回一个空的结果集，不会报错
                 PageHelper.startPage(pageNum,pageSize);
                 List<ProductListVO> productListVOList = Lists.newArrayList();
-                PageInfo pageInfo = new PageInfo(categoryIdList);
+                PageInfo pageInfo = new PageInfo(productListVOList);
                 return ServerResponse.createBySuccess(pageInfo);
             }
             categoryIdList = iCategoryService.selectCategoryAndChildrenById(category.getId()).getData();
@@ -189,7 +189,7 @@ public class ProductServiceImpl implements IProductService {
         //排序处理
         if (StringUtils.isNotBlank(orderBy)){
             if ((Const.ProductListOrderBy.PRICE_ASC_DESC.contains(orderBy))){
-                String[] orderByArray = orderBy.split("-");
+                String[] orderByArray = orderBy.split("_");
                 PageHelper.orderBy(orderByArray[0]+" "+orderByArray[1]);
             }
         }

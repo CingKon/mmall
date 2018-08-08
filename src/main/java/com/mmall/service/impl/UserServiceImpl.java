@@ -24,7 +24,7 @@ public class UserServiceImpl implements IUserService {
         int resultCount=userMapper.checkUsername(name);
         if (resultCount==0)
             return ServerResponse.createByErrorMessage("用户名不存在");
-        //todo MD5密码登录
+        // MD5密码登录
         String md5Password = MD5Util.MD5EncodeUtf8(password);
         User user=userMapper.selectLogin(name,md5Password);
         if (user==null)
@@ -91,13 +91,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     public ServerResponse<String> forgetRestPassword(String username,String passwordNew,String forgetToken){
-        if (StringUtils.isNotBlank(forgetToken))
+        if (StringUtils.isBlank(forgetToken))
             return ServerResponse.createByErrorMessage("参数错误，token需要传递");
         ServerResponse validResponse = this.checkValid(username,Const.USERNAME);
         if (validResponse.isSuccess())
             return ServerResponse.createByErrorMessage("用户不存在");
         String token = TokenCache.getKey(TokenCache.TOKEN_PREFIX+username);
-        if (StringUtils.isNotBlank(token))
+        if (StringUtils.isBlank(token))
             return ServerResponse.createByErrorMessage("token无效或者已过期");
         if (StringUtils.equals(forgetToken,token)){
             String md5Password = MD5Util.MD5EncodeUtf8(passwordNew);
