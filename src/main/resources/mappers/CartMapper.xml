@@ -106,7 +106,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.mmall.pojo.Cart" >
+  <update id="updateByPrimaryKey" parameterType="com.mmall.pojo.Cart">
     update mmall_cart
     set user_id = #{userId,jdbcType=INTEGER},
       product_id = #{productId,jdbcType=INTEGER},
@@ -125,7 +125,7 @@
     and product_id = #{productId}
   </select>
   
-  <select id="selectCartByUserId" resultMap="BaseResultMap" parameterType="int">
+  <select id="selectCartByUserId" resultMap="BaseResultMap" parameterType="integer">
     select
     <include refid="Base_Column_List"/>
     from mmall_cart
